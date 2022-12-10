@@ -115,15 +115,16 @@
                     (grace.overrideAttrs (_: { doCheck = false; }));
 
                 website = pkgs.website;
+                hls = pkgs.haskell-language-server;
              in
-            { inherit grace graceMinimal website; };
+            { inherit grace graceMinimal website hls; };
 
           withDefaultCompiler = withCompiler "ghc902";
           withghcjs = withCompiler "ghcjs";
        in
       rec {
         packages = {
-          default = withDefaultCompiler.graceMinimal;
+          default = withDefaultCompiler.grace;
           website = withghcjs.website;
         };
 
@@ -131,7 +132,7 @@
 
         apps.default = {
           type = "app";
-          program = "${withDefaultCompiler.graceMinimal}/bin/grace";
+          program = "${withDefaultCompiler.grace}/bin/grace";
         };
 
         defaultApp = apps.default;
