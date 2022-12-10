@@ -242,6 +242,41 @@ evaluate env syntax =
             left'  = evaluate env left
             right' = evaluate env right
 
+        Syntax.Operator{ operator = Syntax.Equal, .. } ->
+            case (left', right') of
+                (Value.Scalar (Natural 0), _) ->
+                    right'
+                (_, Value.Scalar (Natural 0)) ->
+                    left'
+                (Value.Scalar (Text ""), _) ->
+                    right'
+                (_, Value.Scalar (Text "")) ->
+                    left'
+                (Value.List [], _) ->
+                    right'
+                (_, Value.List []) ->
+                    left'
+                (Value.Scalar l, Value.Scalar r)
+                    | Natural m <- l
+                    , Natural n <- r ->
+                        Value.Scalar (Bool (m == n))
+                    | Just m <- asInteger l
+                    , Just n <- asInteger r ->
+                        Value.Scalar (Bool (m == n))
+                    | Just m <- asReal l
+                    , Just n <- asReal r ->
+                        Value.Scalar (Bool (m == n))
+                    | Text m <- l
+                    , Text n <- r ->
+                        Value.Scalar (Bool (m == n))
+                (Value.List l, Value.List r) ->
+                    Value.Scalar (Bool (l == r))
+                _ ->
+                    Value.Operator left' Syntax.Equal right'
+          where
+            left'  = evaluate env left
+            right' = evaluate env right
+
         Syntax.Builtin{..} ->
             Value.Builtin builtin
 

@@ -1542,6 +1542,30 @@ infer e0 = do
                 _ -> do
                     throwError (InvalidOperands (Syntax.location left) _L')
 
+        Syntax.Operator{ operator = Syntax.Equal, .. } -> do
+            _L <- infer left
+            _R <- infer right
+
+            check left  _R
+            check right _L
+
+            _Γ <- get
+
+            let _L' = Context.solveType _Γ _L
+
+            let result = Type.Scalar{ scalar = Monotype.Bool, .. }
+
+            case _L' of
+                Type.Scalar{ scalar = Monotype.Natural } -> return result
+                Type.Scalar{ scalar = Monotype.Integer } -> return result
+                Type.Scalar{ scalar = Monotype.Real    } -> return result
+                Type.Scalar{ scalar = Monotype.Text    } -> return result
+                Type.List{}                              -> return result
+
+                _ -> do
+                    throwError (InvalidOperands (Syntax.location left) _L')
+
+
         Syntax.Builtin{ builtin = Syntax.RealEqual, .. }-> do
             return
                 (   Type.Scalar{ scalar = Monotype.Real, .. }

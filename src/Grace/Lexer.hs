@@ -85,6 +85,7 @@ parseToken =
             , And    <$ symbol "&&"
             , Plus   <$ symbol "+"
             , Times  <$ symbol "*"
+            , Equal  <$ symbol "=="
             ] <?> "operator"
 
         , Combinators.choice
@@ -434,6 +435,7 @@ data Token
     | RealNegate
     | RealShow
     | Else
+    | Equal
     | Equals
     | Exists
     | False_

@@ -164,6 +164,7 @@ render t = case t of
     Lexer.RealNegate       -> "Real/negate"
     Lexer.RealShow         -> "Real/show"
     Lexer.Else             -> "else"
+    Lexer.Equal           -> "=="
     Lexer.Equals           -> "="
     Lexer.Exists           -> "exists"
     Lexer.False_           -> "False"
@@ -277,7 +278,9 @@ grammar = mdo
 
     orExpression <- rule (op Lexer.Or Syntax.Or andExpression)
 
-    andExpression <- rule (op Lexer.And Syntax.And applicationExpression)
+    andExpression <- rule (op Lexer.And Syntax.And equalExpression)
+
+    equalExpression <- rule (op Lexer.Equal Syntax.Equal applicationExpression)
 
     let application function argument =
             Syntax.Application{ location = Syntax.location function, .. }
